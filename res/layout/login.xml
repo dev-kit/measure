@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/username_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="用户名:" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/username_tip"
+                android:layout_margin="5dp"
+                android:layout_toRightOf="@id/username_tip" >
+            </EditText>
+
+            <TextView
+                android:id="@+id/password_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/username_tip"
+                android:layout_below="@id/username_tip"
+                android:layout_marginTop="20dp"
+                android:text="密码:" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/password_tip"
+                android:layout_alignLeft="@id/username"
+                android:layout_below="@id/username"
+                android:layout_margin="5dp" >
+            </EditText>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="登录" >
+        </Button>
+    </LinearLayout>
+
+</RelativeLayout>
