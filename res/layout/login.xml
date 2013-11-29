@@ -15,19 +15,41 @@
             android:layout_height="wrap_content" >
 
             <TextView
+                android:id="@+id/server_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="服务器:" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/server"
+                android:singleLine="true"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/server_tip"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/server_tip" >
+            </EditText>
+            
+            <TextView
                 android:id="@+id/username_tip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/server_tip"
+                android:layout_alignRight="@id/server_tip"
+                android:layout_marginTop="20dp"
                 android:text="用户名:" >
             </TextView>
 
             <EditText
                 android:id="@+id/username"
+                android:singleLine="true"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/username_tip"
-                android:layout_margin="5dp"
-                android:layout_toRightOf="@id/username_tip" >
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/username_tip" 
+                android:layout_below="@id/server">
             </EditText>
 
             <TextView
@@ -42,12 +64,13 @@
 
             <EditText
                 android:id="@+id/password"
+                android:inputType="textPassword"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/password_tip"
-                android:layout_alignLeft="@id/username"
+                android:layout_alignRight="@id/username"
                 android:layout_below="@id/username"
-                android:layout_margin="5dp" >
+                android:layout_marginLeft="10dp" >
             </EditText>
         </RelativeLayout>
 

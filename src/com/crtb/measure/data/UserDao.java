@@ -1,7 +1,6 @@
 package com.crtb.measure.data;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 public class UserDao extends BaseDao {
@@ -17,10 +16,6 @@ public class UserDao extends BaseDao {
 	public static final String ZONE_CODE = "zone_code";
 	public static final String SITE_CODE = "site_code";
 	
-	public UserDao(Context context) {
-		super(context);
-	}
-
 	public void createUser() {
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		ContentValues values = new ContentValues();

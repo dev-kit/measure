@@ -42,6 +42,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 			return ;
 		}
 		startActivity(intent);
+		finish();
 	}
 	
 }
