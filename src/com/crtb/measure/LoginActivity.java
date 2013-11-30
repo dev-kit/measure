@@ -34,12 +34,12 @@ public class LoginActivity extends Activity implements OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		Intent intent = new Intent(this, BlueToothSearch.class);
+		Intent intent = new Intent(this, MainActivity.class);
 		String userName = mUserNameText.getText().toString();
 		String password = mPasswrodText.getText().toString();
 		if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)) {
 			Toast.makeText(this, "用户或密码不能为空", Toast.LENGTH_SHORT).show();
-			return ;
+			//return ;
 		}
 		startActivity(intent);
 		finish();

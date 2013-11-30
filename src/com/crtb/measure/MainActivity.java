@@ -18,7 +18,13 @@ public class MainActivity extends Activity {
 		UserDao userDao = new UserDao();
 		userDao.createUser();
 		IWebService webService = CrtbWebService.getInstance();
-		webService.getZoneAndSiteCodeAsync("sdb", "123", new Handler());
+		//webService.getZoneAndSiteCodeAsync("sdb", "123", new Handler());
+		//webService.getPartInfosAsync("XKSJ01SD0001", new Handler());
+		//webService.getPartInfosAsync("abc", new Handler());
+		//webService.getSectInfosAsync("XKSJ01SD0001", "第三工区", new Handler());
+		//webService.getSurveyorsAsync("XKSJ01SD0001", new Handler());
+		webService.getTestResultDataAsync(webService.getMeasureResult(), new Handler());
+		
 	}
 
 	@Override

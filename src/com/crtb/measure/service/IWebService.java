@@ -1,5 +1,7 @@
 package com.crtb.measure.service;
 
+import java.util.Map;
+
 import android.os.Handler;
 
 public interface IWebService {
@@ -13,18 +15,27 @@ public interface IWebService {
 	 * 
 	 * @param siteCode 工点编号
 	 */
-	public void getPartInfos(String siteCode);
+	public void getPartInfosAsync(String siteCode, Handler handler);
 	/**
 	 * 
 	 * @param siteCode 工点编号
 	 * @param sectionName 断面名称
 	 */
-	public void getSectInfos(String siteCode, String sectionName);
+	public void getSectInfosAsync(String siteCode, String sectionName, Handler handler);
 	/**
 	 * 
 	 * @param siteCode 工点编号
 	 */
-	public void getSurveyors(String siteCode);
-	
-	public void uploadSectionPointInfo();
+	public void getSurveyorsAsync(String siteCode, Handler handler);
+	/**
+	 * 
+	 * @param result
+	 * @param handler
+	 */
+	public void getTestResultDataAsync(Map<String, String> result, Handler handler);
+	/**
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMeasureResult();
 }
