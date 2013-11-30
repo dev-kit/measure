@@ -4,5 +4,8 @@
     <string name="app_name">Measure</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="bt_connect_error">蓝牙设备无法建立连接，请确保蓝牙设备距离和状态正常</string>
+    <string name="bt_title">本机蓝牙地址</string>
+    <string name="open_bt">请先打开蓝牙</string>
 
 </resources>
