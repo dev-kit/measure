@@ -128,6 +128,9 @@ public class BlueToothSearch extends Activity {
             UUID uuid = UUID.fromString(SPP_UUID);
             BluetoothDevice btDev = btAdapt.getRemoteDevice(address);
             try {
+                if (btSocket != null) {
+                    btSocket.close();
+                }
                 btSocket = btDev.createRfcommSocketToServiceRecord(uuid);
                 btSocket.connect();
                 BlueToothManager.getInstance(BlueToothSearch.this.getApplicationContext())
@@ -163,6 +166,7 @@ public class BlueToothSearch extends Activity {
                 }
                 setTitle(R.string.bt_title + btAdapt.getAddress());
                 lstDevices.clear();
+                adtDevices.notifyDataSetChanged();
                 btAdapt.startDiscovery();
             } else if (v == tbtnSwitch) {
                 if (tbtnSwitch.isChecked() == false)

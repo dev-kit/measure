@@ -34,7 +34,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		Intent intent = new Intent(this, MainActivity.class);
+		Intent intent = new Intent(this, BlueToothSearch.class);
 		String userName = mUserNameText.getText().toString();
 		String password = mPasswrodText.getText().toString();
 		if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)) {
