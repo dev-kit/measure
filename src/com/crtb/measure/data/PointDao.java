@@ -1,5 +1,8 @@
 package com.crtb.measure.data;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 public class PointDao extends BaseDao {
 	public static final String TABLE = "point";
 	public static final String ID = "id";
@@ -10,4 +13,9 @@ public class PointDao extends BaseDao {
 	public static final String MVALUES = "mvalues";
 	public static final String XYZS = "xyzs";
 	public static final String DESCRIPTION = "description";
+	
+    public synchronized static Cursor getPoint(String where) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        return db.query(TABLE, null, where, null, null, null, null);
+    }
 }

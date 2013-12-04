@@ -29,6 +29,8 @@
         <activity android:name="com.crtb.measure.MainActivity" >
         </activity>
         <activity android:name="com.crtb.measure.BlueToothSearch"/>
+        <activity android:name="com.crtb.measure.PointActivity"/>
+        <activity android:name="com.crtb.measure.SectionActivity"/>
     </application>
 
     <uses-permission android:name="android.permission.BLUETOOTH" />

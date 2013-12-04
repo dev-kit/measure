@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class UserDao extends BaseDao {
 	public static final String TABLE = "user";
-	public static final String ID = "id";
+	public static final String ID = "_id";
 	public static final String SERVER = "server";
 	public static final String PORT = "port";
 	public static final String API_TYPE = "api_type";
