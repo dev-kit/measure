@@ -20,7 +20,8 @@ public class DbHelper extends SQLiteOpenHelper {
 				ProjectDao.NAME + " TEXT, " +
 				ProjectDao.CREATE_TIME + " TEXT, " +
 				ProjectDao.START_CHAINAGE + " TEXT, " +
-				ProjectDao.END_CHAINAGE + " TEXT" + ");");
+				ProjectDao.END_CHAINAGE + " TEXT, " + 
+				"UNIQUE (" + ProjectDao.NAME + ")" + " )");
 		
 		//create section basic info table
 		db.execSQL("CREATE TABLE " + BasicInfoDao.TABLE + " (" +
@@ -30,7 +31,8 @@ public class DbHelper extends SQLiteOpenHelper {
 				BasicInfoDao.SECTION_NAME + " TEXT, " +
 				BasicInfoDao.SECTION_CODE + " TEXT, " +
 				BasicInfoDao.INNER_CODES + " TEXT, " +
-				BasicInfoDao.UPLOAD + " TEXT" + ");");
+				BasicInfoDao.UPLOAD + " INTEGER DEFAULT 0, " +
+				"UNIQUE (" + BasicInfoDao.SECTION_CODE + ")"+ " )");
 		
 		//create section table
 		db.execSQL("CREATE TABLE " + SectionDao.TABLE + " (" +
@@ -66,7 +68,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 UserDao.DESCRIPTION + " TEXT, " +
                 UserDao.LOGIN_TIME + " TEXT, " +
                 UserDao.ZONE_CODE + " TEXT, " +
-                UserDao.SITE_CODE + " TEXT" + ");");
+                UserDao.SITE_CODE + " TEXT, " + 
+                "UNIQUE (" + UserDao.USER_NAME + ")"+ " )");
 		
 		//create surveyor table
 		db.execSQL("CREATE TABLE " + SurveyorDao.TABLE + " (" +
@@ -74,7 +77,8 @@ public class DbHelper extends SQLiteOpenHelper {
 				SurveyorDao.USER_ID + " INTEGER, " +
 				SurveyorDao.SURVEYOR_NAME + " TEXT, " +
 				SurveyorDao.SURVEYOR_ID + " TEXT, " +
-				SurveyorDao.DESCRIPTION + " TEXT" + ");");
+				SurveyorDao.DESCRIPTION + " TEXT, " + 
+				"UNIQUE (" + SurveyorDao.SURVEYOR_ID + ")"+ " )");
 }
 
 	@Override

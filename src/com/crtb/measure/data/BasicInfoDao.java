@@ -13,6 +13,16 @@ public class BasicInfoDao extends BaseDao {
 	public static final String SECTION_CODE = "section_code";
 	public static final String INNER_CODES = "inner_codes";
 	public static final String UPLOAD = "upload";
+	
+	public synchronized void insert(String zoneCode, String siteCode, String sectionCode, String innerCodes) {
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(ZONE_CODE, zoneCode);
+		values.put(SITE_COTE, siteCode);
+		values.put(SECTION_CODE, sectionCode);
+		values.put(INNER_CODES, innerCodes);
+		db.insertWithOnConflict(TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+	}
 
     public synchronized static Cursor query(String where) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();

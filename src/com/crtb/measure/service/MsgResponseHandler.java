@@ -2,8 +2,6 @@ package com.crtb.measure.service;
 
 import org.ksoap2.serialization.SoapObject;
 
-import com.crtb.measure.data.SurveyorDao;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -16,17 +14,8 @@ public class MsgResponseHandler {
 		mUiHandler = uiHandler;
 	}
 
-	private void notifySuccess() {
-		Message msg = Message.obtain();
-		mUiHandler.sendMessage(msg);
-	}
-	
-	private void notifyFailed() {
-		Message msg = Message.obtain();
-		mUiHandler.sendMessage(msg);
-	}
-
-	public void handleResponse(Object response, String action) {
+	public void handleResponse(Object response, SoapObject message) {
+		String action = message.getName();
 		Log.d(TAG, "response: " + response);
 		try {
 			if (!(response instanceof SoapObject)) {
@@ -41,22 +30,61 @@ public class MsgResponseHandler {
 			}
 			//XKSJ01BD03SD01#第三工区/XKSJ01SD0001#某某隧道名称
 			if ("getZoneAndSiteCodeResponse".equals(result.getName())) {
-				Log.d(TAG, data.getPropertyAsString(0));
+				final String[] temp = data.getPropertyAsString(0).split("/");
+				final String zone_code = temp[0].split("#")[0];
+				final String site_code = temp[1].split("#")[0];
+				Message msg = Message.obtain();
+				msg.what = IWebService.MSG_GET_ZONE_AND_SITE_CODE_DONE;
+				msg.obj = zone_code + "," + site_code;
+				mUiHandler.sendMessage(msg);
+				Log.d(TAG, "zone_code: " + zone_code + ", " + "site_code: " + site_code);
 			} else if ("getPartInfosResponse".equals(result.getName())) {
 				//getPartInfosResponse{getPartInfosResult=anyType{string=进口; string=出口; }; }
+				StringBuilder sb = new StringBuilder();
 				for(int i = 0 ; i < data.getPropertyCount(); i++) {
-					Log.d(TAG, data.getPropertyAsString(i));
+					sb.append(data.getPropertyAsString(i));
+					sb.append(",");
 				}
+				sb.deleteCharAt(sb.lastIndexOf(","));
+				Message msg = Message.obtain();
+				msg.what = IWebService.MSG_GET_PART_INFOS_DONE;
+				msg.obj = sb.toString();
+				mUiHandler.sendMessage(msg);
 			} else if ("getSectInfosResponse".equals(result.getName())){
+				StringBuilder sb = new StringBuilder();
 				for(int i = 0 ; i < data.getPropertyCount(); i++) {
-					Log.d(TAG, data.getPropertyAsString(i));
+					sb.append(data.getPropertyAsString(i));
+					sb.append(",");
 				}
+				sb.deleteCharAt(sb.lastIndexOf(","));
+				Message msg = Message.obtain();
+				msg.what = IWebService.MSG_GET_SECT_INFOS_DONE;
+				String projectName = message.getPropertyAsString("partName");
+				msg.obj = projectName + ":" + sb.toString();
+				mUiHandler.sendMessage(msg);
+			} else if("getTestCodesResponse".equals(result.getName())) {
+				StringBuilder sb = new StringBuilder();
+				for(int i = 0 ; i < data.getPropertyCount(); i++) {
+					sb.append(data.getPropertyAsString(i));
+					sb.append("/");
+				}
+				sb.deleteCharAt(sb.lastIndexOf("/"));
+				Message msg = Message.obtain();
+				msg.what = IWebService.MSG_GET_TEST_CODES_DONE;
+				String sectionCode = message.getPropertyAsString("sectcode");
+				msg.obj = sectionCode + ":" + sb.toString();
+				mUiHandler.sendMessage(msg);
+				Log.d(TAG, "innercodes: " + sb.toString());
 			} else if("getSurveyorsResponse".equals(result.getName())) {
-				SurveyorDao surveyorDao = new SurveyorDao();
+				StringBuilder sb = new StringBuilder();
 				for(int i = 0; i < data.getPropertyCount(); i++) {
-					String[] surveyor = data.getPropertyAsString(i).split("#");
-					surveyorDao.insert(surveyor[0], surveyor[1]);
+					sb.append(data.getPropertyAsString(i));
+					sb.append(",");
 				}
+				Message msg = Message.obtain();
+				msg.what = IWebService.MSG_GET_SURVEYORS_DONE;
+				msg.obj = sb.toString();
+				mUiHandler.sendMessage(msg);
 			} else if ("getTestResultDataResponse".equals(result.getName())) {
 				
 			}

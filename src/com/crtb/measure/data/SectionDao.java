@@ -10,7 +10,7 @@ import android.text.TextUtils;
 public class SectionDao extends BaseDao {
     public static final String TABLE = "section";
 
-    public static final String ID = "id";
+    public static final String ID = "_id";
 
     public static final String SECTION_CODE = "section_code";
 
@@ -43,7 +43,7 @@ public class SectionDao extends BaseDao {
 
         Cursor c = db
                 .rawQuery(
-                        "SELECT b.*, s.id as sid FROM basicinfo AS b LEFT JOIN section AS s ON b.section_code = s.section_code where sid IS NULL",
+                        "SELECT b.*, s._id as sid FROM basicinfo AS b LEFT JOIN section AS s ON b.section_code = s.section_code where sid IS NULL",
                         null);
         if (c == null) {
             return;

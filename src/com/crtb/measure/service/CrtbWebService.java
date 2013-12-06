@@ -62,13 +62,13 @@ public class CrtbWebService implements IWebService {
 	}
 
 	@Override
-	public void getSectInfosAsync(final String siteCode, final String sectionName, final Handler handler) {
+	public void getSectInfosAsync(final String siteCode, final String projectName, final Handler handler) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				Map<String, String> parameters = new HashMap<String, String>();
 				parameters.put("gdcode", siteCode);
-				parameters.put("partName", sectionName);
+				parameters.put("partName", projectName);
 				SoapObject message = SoapMessageFactory.createMessage("getSectInfos", parameters);
 				try {
 					send(message, new MsgResponseHandler(handler), TRAFFIC_SERVICE_URI_GET);
@@ -79,6 +79,23 @@ public class CrtbWebService implements IWebService {
 		}).start();
 	}
 
+	@Override
+	public void getTestCodesAsync(final String sectionCode, final Handler handler) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Map<String, String> parameters = new HashMap<String, String>();
+				parameters.put("sectcode", sectionCode);
+				SoapObject message = SoapMessageFactory.createMessage("getTestCodes", parameters);
+				try {
+					send(message, new MsgResponseHandler(handler), TRAFFIC_SERVICE_URI_GET);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	
 	@Override
 	public void getSurveyorsAsync(final String siteCode, final Handler handler) {
 		new Thread(new Runnable() {
@@ -116,13 +133,13 @@ public class CrtbWebService implements IWebService {
 	public Map<String, String> getMeasureResult() {
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("sectcode", "tim");
-		result.put("meascodes", "tim");
-		result.put("facedk", "tim");
+		result.put("meascodes", "tim"); // innercodes
+		result.put("facedk", "tim"); //facekilo
 		result.put("buildstep", "tim");
 		result.put("instr", "tim");
 		result.put("surveydate", "tim");
-		result.put("measvals", "tim");
-		result.put("meascoords", "tim");
+		result.put("measvals", "tim"); //values
+		result.put("meascoords", "tim");//xyz
 		result.put("surveyor", "tim");
 		result.put("surveyID", "tim");
 		result.put("description", "tim");
@@ -136,6 +153,6 @@ public class CrtbWebService implements IWebService {
         soapEnvelope.setOutputSoapObject(rpcMessage);
         HttpTransportSE localHttpTransportSE = new HttpTransportSE(url, CONNECITON_TIME_OUT);
         localHttpTransportSE.call(NAMESPACE + rpcMessage.getName(), soapEnvelope);
-        handler.handleResponse(soapEnvelope.bodyIn, rpcMessage.getName());
+        handler.handleResponse(soapEnvelope.bodyIn, rpcMessage);
     }
 }
