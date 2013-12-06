@@ -109,7 +109,7 @@ public class SectionActivity extends ListActivity {
     }
 
     public void refresh() {
-        startManagingCursor(mCursor);
+        stopManagingCursor(mCursor);
         mCursor.close();
         showSectionView();
     }
