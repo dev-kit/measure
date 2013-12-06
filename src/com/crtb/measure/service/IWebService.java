@@ -43,10 +43,5 @@ public interface IWebService {
 	 * @param result
 	 * @param handler
 	 */
-	public void getTestResultDataAsync(Map<String, String> result, Handler handler);
-	/**
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMeasureResult();
+	public void getTestResultDataAsync(Handler handler);
 }

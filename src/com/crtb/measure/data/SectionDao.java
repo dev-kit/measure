@@ -71,8 +71,8 @@ public class SectionDao extends BaseDao {
                     for (String point : pointsList) {
                         if (!TextUtils.isEmpty(point)) {
                             ContentValues values2 = new ContentValues();
-                            values.put(PointDao.SECTION_ID, Id);
-                            values.put(PointDao.INNER_CODE, point);
+                            values2.put(PointDao.SECTION_ID, Id);
+                            values2.put(PointDao.INNER_CODE, point);
                             db.insert(PointDao.TABLE, null, values2);
                         }
                     }

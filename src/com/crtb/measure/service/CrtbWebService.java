@@ -9,6 +9,8 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.crtb.measure.data.ResultDao;
+
 import android.os.Handler;
 
 public class CrtbWebService implements IWebService {
@@ -115,11 +117,12 @@ public class CrtbWebService implements IWebService {
 	}
 
 	@Override
-	public void getTestResultDataAsync(final Map<String, String> result, final Handler handler) {
+	public void getTestResultDataAsync(final Handler handler) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				SoapObject message = SoapMessageFactory.createMessage("getTestResultData", result);
+				ResultDao resultDao = new ResultDao();
+				SoapObject message = SoapMessageFactory.createMessage("getTestResultData", resultDao.getMeasureResult());
 				try {
 					send(message, new MsgResponseHandler(handler), TRAFFIC_SERVICE_URI_POST);
 				} catch (Exception e) {
@@ -127,23 +130,6 @@ public class CrtbWebService implements IWebService {
 				}
 			}
 		}).start();
-	}
-	
-	@Override
-	public Map<String, String> getMeasureResult() {
-		Map<String, String> result = new HashMap<String, String>();
-		result.put("sectcode", "tim");
-		result.put("meascodes", "tim"); // innercodes
-		result.put("facedk", "tim"); //facekilo
-		result.put("buildstep", "tim");
-		result.put("instr", "tim");
-		result.put("surveydate", "tim");
-		result.put("measvals", "tim"); //values
-		result.put("meascoords", "tim");//xyz
-		result.put("surveyor", "tim");
-		result.put("surveyID", "tim");
-		result.put("description", "tim");
-		return result;
 	}
 	
 	private static void send(SoapObject rpcMessage, MsgResponseHandler handler, String url) throws IOException, XmlPullParserException {

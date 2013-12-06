@@ -19,6 +19,8 @@ package com.crtb.measure;
 import com.crtb.measure.data.BasicInfoDao;
 import com.crtb.measure.data.PointDao;
 import com.crtb.measure.data.SectionDao;
+import com.crtb.measure.service.CrtbWebService;
+import com.crtb.measure.service.IWebService;
 
 import android.app.ListActivity;
 import android.content.AsyncQueryHandler;
@@ -29,6 +31,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -39,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -63,7 +68,21 @@ public class PointActivity extends ListActivity {
         setContentView(R.layout.point_list);
         // Use an existing ListAdapter that will map an array
         // of strings to TextViews
-        int sectionID = (int) getIntent().getLongExtra("section_id", -1);
+        findViewById(R.id.upload).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                CrtbWebService.getInstance().getTestResultDataAsync(new Handler(){
+
+                    @Override
+                    public void handleMessage(Message msg) {
+                        refresh();
+                        super.handleMessage(msg);
+                    }
+                });
+            }
+        });
+        int sectionID = (int)getIntent().getLongExtra("section_id", -1);
         if (sectionID < 0) {
             return;
         }
@@ -80,7 +99,7 @@ public class PointActivity extends ListActivity {
             SectionDao.syncBasicInfo();
             Cursor c = BasicInfoDao.query(null);
 
-            int sectionID = (int) getIntent().getLongExtra("section_id", -1);
+            int sectionID = (int)getIntent().getLongExtra("section_id", -1);
             if (c == null || c.getCount() <= sectionID) {
                 return null;
             }
@@ -110,7 +129,7 @@ public class PointActivity extends ListActivity {
             if (c == null) {
                 setListAdapter(new PointAdapter(PointActivity.this));
                 return;
-            } 
+            }
             // setListAdapter(new ArrayAdapter<String>(this,
             // android.R.layout.simple_list_item_1,
             // mPointsList));
@@ -132,13 +151,13 @@ public class PointActivity extends ListActivity {
         public PointCursorAdapter(Context context, Cursor c) {
             super(context, c);
             // TODO Auto-generated constructor stub
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
 
-            TextView pointNameView = (TextView) view.findViewById(R.id.point_name);
+            TextView pointNameView = (TextView)view.findViewById(R.id.point_name);
             pointNameView.setText(cursor.getString(cursor.getColumnIndex(PointDao.INNER_CODE)));
             // Null tag means the view has the correct data
             view.setTag(null);
@@ -158,7 +177,7 @@ public class PointActivity extends ListActivity {
         private LayoutInflater mInflater;
 
         public PointAdapter(Context context) {
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         /**
@@ -207,7 +226,7 @@ public class PointActivity extends ListActivity {
                 view = convertView;
             }
 
-            TextView pointNameView = (TextView) view.findViewById(R.id.point_name);
+            TextView pointNameView = (TextView)view.findViewById(R.id.point_name);
             pointNameView.setText(mPointsList[position]);
             // Null tag means the view has the correct data
             view.setTag(null);
@@ -217,7 +236,7 @@ public class PointActivity extends ListActivity {
     }
 
     public void refresh() {
-        //
+        mMyAsyncTask.execute();
     }
 
     @Override
