@@ -1,6 +1,7 @@
 package com.crtb.measure.data;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class UserDao extends BaseDao {
@@ -25,4 +26,9 @@ public class UserDao extends BaseDao {
 		values.put(LOGIN_TIME, loginDate);
 		db.insertWithOnConflict(TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 	}
+
+    public synchronized static Cursor query(String where) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        return db.query(TABLE, null, where, null, null, null, null);
+    }
 }
