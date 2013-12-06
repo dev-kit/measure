@@ -60,8 +60,6 @@ public class PointActivity extends ListActivity {
 
     private String mSectCode;
 
-    private MyAsyncTask mMyAsyncTask = new MyAsyncTask();
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +70,7 @@ public class PointActivity extends ListActivity {
 
             @Override
             public void onClick(View v) {
-                CrtbWebService.getInstance().getTestResultDataAsync(new Handler(){
+                CrtbWebService.getInstance().getTestResultDataAsync(new Handler() {
 
                     @Override
                     public void handleMessage(Message msg) {
@@ -82,6 +80,7 @@ public class PointActivity extends ListActivity {
                 });
             }
         });
+
         int sectionID = (int)getIntent().getLongExtra("section_id", -1);
         if (sectionID < 0) {
             return;
@@ -89,7 +88,7 @@ public class PointActivity extends ListActivity {
 
         setListAdapter(new PointCursorAdapter(PointActivity.this, null));
         getListView().setTextFilterEnabled(true);
-        mMyAsyncTask.execute();
+        new MyAsyncTask().execute();
     }
 
     private class MyAsyncTask extends AsyncTask<Void, Void, Cursor> {
@@ -159,6 +158,24 @@ public class PointActivity extends ListActivity {
 
             TextView pointNameView = (TextView)view.findViewById(R.id.point_name);
             pointNameView.setText(cursor.getString(cursor.getColumnIndex(PointDao.INNER_CODE)));
+            String XYZS = cursor.getString(cursor.getColumnIndex(PointDao.XYZS));
+            if (!TextUtils.isEmpty(XYZS)) {
+                String[] list = XYZS.split("/|#");
+                if (list.length > 0) {
+                    ((TextView)view.findViewById(R.id.x)).setText(list[0]);
+                }
+                if (list.length > 1) {
+                    ((TextView)view.findViewById(R.id.y)).setText(list[1]);
+                }
+                if (list.length > 2) {
+                    ((TextView)view.findViewById(R.id.z)).setText(list[2]);
+                }
+
+            }
+            String time = cursor.getString(cursor.getColumnIndex(PointDao.MTIME));
+            if (!TextUtils.isEmpty(time)) {
+                ((TextView)view.findViewById(R.id.measure_time)).setText(time);
+            }
             // Null tag means the view has the correct data
             view.setTag(null);
 
@@ -236,7 +253,7 @@ public class PointActivity extends ListActivity {
     }
 
     public void refresh() {
-        mMyAsyncTask.execute();
+        new MyAsyncTask().execute();
     }
 
     @Override
