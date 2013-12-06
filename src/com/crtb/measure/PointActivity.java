@@ -17,21 +17,30 @@
 package com.crtb.measure;
 
 import com.crtb.measure.data.BasicInfoDao;
+import com.crtb.measure.data.PointDao;
 import com.crtb.measure.data.SectionDao;
 
 import android.app.ListActivity;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CursorAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -46,90 +55,110 @@ public class PointActivity extends ListActivity {
 
     private String mSectCode;
 
+    private MyAsyncTask mMyAsyncTask = new MyAsyncTask();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.point_list);
         // Use an existing ListAdapter that will map an array
         // of strings to TextViews
-        int sectionID = (int)getIntent().getLongExtra("section_id", -1);
+        int sectionID = (int) getIntent().getLongExtra("section_id", -1);
         if (sectionID < 0) {
             return;
         }
 
-        // String where = BasicInfoDao.ID + "=" + sectionID;
-        Cursor c = BasicInfoDao.queryAllBasicInfo(null);
-
-        if (c == null || c.getCount() <= sectionID) {
-            return;
-        }
-
-        if (c.moveToPosition(sectionID)) {
-            try {
-                String innerCodes = c.getString(c.getColumnIndex(BasicInfoDao.INNER_CODES));
-                if (!TextUtils.isEmpty(innerCodes)) {
-                    mPointsList = innerCodes.split("/|#");
-                }
-                mSectCode = c.getString(c.getColumnIndex(BasicInfoDao.SECTION_CODE));
-            } catch (SQLException e) {
-                c.close();
-            }
-        }
-
-        String where = SectionDao.ID + "=" + mSectCode;
-        Cursor sectionCursor = SectionDao.getSection(where);
-
-        if (sectionCursor != null || sectionCursor.getCount() != 0) {
-            // query DB
-//            return;
-        }
-
-        if (mPointsList == null) {
-            return;
-        }
-        // setListAdapter(new ArrayAdapter<String>(this,
-        // android.R.layout.simple_list_item_1,
-        // mPointsList));
-        setListAdapter(new PointAdapter(this));
+        setListAdapter(new PointCursorAdapter(PointActivity.this, null));
         getListView().setTextFilterEnabled(true);
-        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        mMyAsyncTask.execute();
     }
 
-    // private class PointCursorAdapter extends CursorAdapter {
-    //
-    // private LayoutInflater mInflater;
-    //
-    // public PointCursorAdapter(Context context, Cursor c) {
-    // super(context, c);
-    // // TODO Auto-generated constructor stub
-    // mInflater =
-    // (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    // }
-    //
-    // @Override
-    // public void bindView(View view, Context context, Cursor cursor) {
-    //
-    // TextView pointNameView = (TextView)view.findViewById(R.id.point_name);
-    // pointNameView.setText(mPointsList[position]);
-    // // Null tag means the view has the correct data
-    // view.setTag(null);
-    //
-    // }
-    //
-    // @Override
-    // public View newView(Context context, Cursor cursor, ViewGroup parent) {
-    // View view = mInflater.inflate(R.layout.point_list_item, parent, false);
-    //
-    // return view;
-    // }
-    //
-    // }
+    private class MyAsyncTask extends AsyncTask<Void, Void, Cursor> {
+
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            SectionDao.syncBasicInfo();
+            Cursor c = BasicInfoDao.query(null);
+
+            int sectionID = (int) getIntent().getLongExtra("section_id", -1);
+            if (c == null || c.getCount() <= sectionID) {
+                return null;
+            }
+
+            if (c.moveToPosition(sectionID)) {
+                try {
+                    String innerCodes = c.getString(c.getColumnIndex(BasicInfoDao.INNER_CODES));
+                    if (!TextUtils.isEmpty(innerCodes)) {
+                        mPointsList = innerCodes.split("/|#");
+                    }
+                    mSectCode = c.getString(c.getColumnIndex(BasicInfoDao.SECTION_CODE));
+                } catch (SQLException e) {
+                    c.close();
+                }
+            }
+
+            Cursor points = null;
+            if (!TextUtils.isEmpty(mSectCode)) {
+                points = PointDao.getPointsBySection(mSectCode);
+            }
+
+            return points;
+        }
+
+        @Override
+        protected void onPostExecute(Cursor c) {
+            if (c == null) {
+                setListAdapter(new PointAdapter(PointActivity.this));
+                return;
+            } 
+            // setListAdapter(new ArrayAdapter<String>(this,
+            // android.R.layout.simple_list_item_1,
+            // mPointsList));
+            ListAdapter listAdapter = getListAdapter();
+            if (listAdapter instanceof CursorAdapter) {
+                ((CursorAdapter)listAdapter).changeCursor(c);
+            } else {
+                setListAdapter(new PointCursorAdapter(PointActivity.this, c));
+            }
+            super.onPostExecute(c);
+        }
+
+    }
+
+    private class PointCursorAdapter extends CursorAdapter {
+
+        private LayoutInflater mInflater;
+
+        public PointCursorAdapter(Context context, Cursor c) {
+            super(context, c);
+            // TODO Auto-generated constructor stub
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+
+            TextView pointNameView = (TextView) view.findViewById(R.id.point_name);
+            pointNameView.setText(cursor.getString(cursor.getColumnIndex(PointDao.INNER_CODE)));
+            // Null tag means the view has the correct data
+            view.setTag(null);
+
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            View view = mInflater.inflate(R.layout.point_list_item, parent, false);
+
+            return view;
+        }
+
+    }
 
     private class PointAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
 
         public PointAdapter(Context context) {
-            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         /**
@@ -175,16 +204,33 @@ public class PointActivity extends ListActivity {
             if (convertView == null) {
                 view = mInflater.inflate(R.layout.point_list_item, parent, false);
             } else {
-                view = (TextView)convertView;
+                view = convertView;
             }
 
-            TextView pointNameView = (TextView)view.findViewById(R.id.point_name);
+            TextView pointNameView = (TextView) view.findViewById(R.id.point_name);
             pointNameView.setText(mPointsList[position]);
             // Null tag means the view has the correct data
             view.setTag(null);
 
             return view;
         }
+    }
+
+    public void refresh() {
+        //
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        refresh();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(R.string.refresh);
+        return super.onPrepareOptionsMenu(menu);
     }
 
 }

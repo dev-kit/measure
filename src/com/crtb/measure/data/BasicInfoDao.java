@@ -14,7 +14,7 @@ public class BasicInfoDao extends BaseDao {
 	public static final String INNER_CODES = "inner_codes";
 	public static final String UPLOAD = "upload";
 
-    public synchronized static Cursor queryAllBasicInfo(String where) {
+    public synchronized static Cursor query(String where) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         return db.query(TABLE, null, where, null, null, null, null);
     }

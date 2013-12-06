@@ -23,6 +23,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -34,40 +37,51 @@ import android.widget.TextView;
  */
 public class SectionActivity extends ListActivity {
 
+    SimpleCursorAdapter mAdapter;
+
+    Cursor mCursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        showSectionView();
+    }
+
+    private void showSectionView() {
         // Get a cursor with all phones
-        Cursor c = BasicInfoDao.queryAllBasicInfo(null);
-        startManagingCursor(c);
+        mCursor = BasicInfoDao.query(null);
+        startManagingCursor(mCursor);
 
         // Map Cursor columns to views defined in simple_list_item_2.xml
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_2, c, new String[] {
+        mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, mCursor,
+                new String[] {
                         BasicInfoDao.SECTION_NAME, BasicInfoDao.UPLOAD
                 }, new int[] {
                         android.R.id.text1, android.R.id.text2
                 });
         // Used to display a readable string for the phone type
-        adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+        mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
                 // Let the adapter handle the binding if the column is not TYPE
                 if (cursor == null || cursor.getCount() == 0) {
                     return true;
                 }
                 String sectionName = cursor.getString(COLUMN_SECTION_NAME);
+                if (TextUtils.isEmpty(sectionName)) {
+                    sectionName = cursor.getString(COLUMN_SECTION_CODE);
+                }
                 int upload = cursor.getInt(COLUMN_UPLOAD);
                 if (columnIndex == COLUMN_SECTION_NAME) {
-                    ((TextView)view).setText(sectionName);
+                    ((TextView) view).setText(sectionName);
                 }
                 if (columnIndex == COLUMN_UPLOAD) {
-                    ((TextView)view).setText(upload > 0 ? R.string.upload : R.string.not_upload);
+                    ((TextView) view).setText(upload > 0 ? R.string.upload : R.string.not_upload);
                 }
                 return true;
             }
         });
-        setListAdapter(adapter);
+        setListAdapter(mAdapter);
     }
 
     @Override
@@ -78,6 +92,28 @@ public class SectionActivity extends ListActivity {
         startActivity(intent);
     }
 
-    private static final int COLUMN_SECTION_NAME = 3;;
+    public void refresh() {
+        startManagingCursor(mCursor);
+        mCursor.close();
+        showSectionView();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        refresh();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(R.string.refresh);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private static final int COLUMN_SECTION_NAME = 3;
+
+    private static final int COLUMN_SECTION_CODE = 4;
+
     private static final int COLUMN_UPLOAD = 6;
 }

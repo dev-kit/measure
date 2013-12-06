@@ -1,6 +1,7 @@
 package com.crtb.measure;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -24,6 +25,9 @@ public class MainActivity extends Activity {
 		//webService.getSectInfosAsync("XKSJ01SD0001", "第三工区", new Handler());
 		//webService.getSurveyorsAsync("XKSJ01SD0001", new Handler());
 		webService.getTestResultDataAsync(webService.getMeasureResult(), new Handler());
+		
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
 		
 	}
 

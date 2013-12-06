@@ -21,21 +21,23 @@
 
     <TextView
         android:id="@+id/point_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:padding="5dip"
         android:text="ffff"
         android:textSize="20sp" />
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
+        android:layout_weight="3"
         android:orientation="vertical" >
 
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
@@ -105,5 +107,13 @@
                 android:text="@string/no_data" />
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/measure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dip"
+        android:padding="1dip"
+        android:text="measure" />
 
 </LinearLayout>
