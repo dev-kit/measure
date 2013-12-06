@@ -301,14 +301,27 @@ public class PointActivity extends ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
-        refresh();
+        switch (item.getItemId()) {
+            case MENU_REFRESH:
+                refresh();
+                break;
+            case MENU_BT_SETTING:
+                Intent intent = new Intent(this, BlueToothSearch.class);
+                startActivity(intent);
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(R.string.refresh);
+        menu.add(0, MENU_REFRESH, 0, R.string.refresh);
+        menu.add(0, MENU_BT_SETTING, 0, R.string.bt_setting);
         return super.onPrepareOptionsMenu(menu);
     }
 
+    private final static int MENU_REFRESH = 0;
+
+    private final static int MENU_BT_SETTING = 1;
 }

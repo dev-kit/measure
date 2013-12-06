@@ -81,10 +81,10 @@ public class BlueToothSearch extends Activity {
         intent.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(searchDevices, intent);
 
-        if (sAcceptThread == null) {
-            sAcceptThread = new AcceptThread();
-            sAcceptThread.start();
-        }
+//        if (sAcceptThread == null) {
+//            sAcceptThread = new AcceptThread();
+//            sAcceptThread.start();
+//        }
     }
 
     private BroadcastReceiver searchDevices = new BroadcastReceiver() {
@@ -136,19 +136,12 @@ public class BlueToothSearch extends Activity {
                 BlueToothManager.getInstance(BlueToothSearch.this.getApplicationContext())
                         .setBTSocket(btSocket);
                 Log.v("benson", "client get accepted");
-                BlueToothManager.getInstance(null).measure();
-                //
-                // int input = btSocket.getInputStream().read();
-                // while (input != -1) {
-                // Log.v("benson", "client get " + input);
-                // input = btSocket.getInputStream().read();
-                // }
-                Intent intent = new Intent();
-                intent.setClass(BlueToothSearch.this, MainActivity.class);
-                startActivity(intent);
+                Toast.makeText(BlueToothSearch.this, R.string.bt_setup, 1000).show();
+                BlueToothSearch.this.finish();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                Toast.makeText(BlueToothSearch.this, R.string.bt_connect_error, 1000).show();
             }
 
         }
