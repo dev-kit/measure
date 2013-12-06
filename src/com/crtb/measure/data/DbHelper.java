@@ -44,7 +44,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				SectionDao.SURVEYOR_NAME + " TEXT, " +
 				SectionDao.SURVEYOR_ID + " TEXT, " +
 				SectionDao.DESCRIPTION + " TEXT, " +
-				SectionDao.UPLOAD + " INTEGER" + ");");
+				SectionDao.UPLOAD + " INTEGER DEFAULT 0" + ");");
 		
 		//create point table
 		db.execSQL("CREATE TABLE " + PointDao.TABLE + " (" +
