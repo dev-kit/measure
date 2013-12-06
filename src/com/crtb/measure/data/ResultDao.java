@@ -17,7 +17,7 @@ public class ResultDao extends BaseDao {
     	SectionDao.INSTRUMENT,
     	SectionDao.SURVEYOR_NAME,
     	SectionDao.SURVEYOR_ID,
-    	SectionDao.DESCRIPTION,
+    	SectionDao.TABLE + "." + SectionDao.DESCRIPTION,
     	PointDao.MTIME,
     	PointDao.INNER_CODE,
     	PointDao.MVALUES,
