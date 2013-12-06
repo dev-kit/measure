@@ -16,6 +16,6 @@ public class SurveyorDao extends BaseDao {
 		ContentValues values = new ContentValues();
 		values.put(SURVEYOR_NAME, name);
 		values.put(SURVEYOR_ID, id);
-		db.insert(TABLE, null, values);
+		db.insertWithOnConflict(TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 	}
 }
