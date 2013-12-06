@@ -7,11 +7,15 @@ import java.io.OutputStream;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
+import android.content.ContentValues;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.crtb.measure.AppContext;
 import com.crtb.measure.R;
+import com.crtb.measure.data.PointDao;
 
 public class BlueToothManager {
     public static int TMC_MEA_INC = 0;
@@ -37,6 +41,7 @@ public class BlueToothManager {
     private long mWaitTime = 10000;
 
     private static String TEST_RET = "%R1P,0,0:0,1000,200,3000,123456";
+
     // ASCII-Request
     // %R1Q,2082:WaitTime[long],Mode[long]
     // ASCII-Response
@@ -68,7 +73,10 @@ public class BlueToothManager {
         return mBTAdapt.getState();
     }
 
-    private void ensureConnect() {
+    private boolean ensureConnect() {
+        if (mBTSocket == null) {
+            return false;
+        }
         if (!mBTSocket.isConnected()) {
             try {
                 mBTSocket.connect();
@@ -76,32 +84,38 @@ public class BlueToothManager {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
                 Toast.makeText(sContext, R.string.bt_connect_error, Toast.LENGTH_SHORT).show();
+                return false;
             }
         }
+        return true;
     }
 
-    public Coordinate measure() {
-        ensureConnect();
-        OutputStream out;
-        InputStream input;
-        byte[] buffer = new byte[1024];
-        try {
-            out = mBTSocket.getOutputStream();
-            input = mBTSocket.getInputStream();
-            out.write(COMMAND_MEASURE.getBytes());
-            input.read(buffer);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Toast.makeText(sContext, R.string.bt_connect_error, Toast.LENGTH_SHORT).show();
+    public ContentValues measure() {
+        byte[] buffer = null;
+        if (ensureConnect()) {
+            buffer = new byte[1024];
+            OutputStream out;
+            InputStream input;
+            try {
+                out = mBTSocket.getOutputStream();
+                input = mBTSocket.getInputStream();
+                out.write(COMMAND_MEASURE.getBytes());
+                input.read(buffer);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                Toast.makeText(sContext, R.string.bt_connect_error, Toast.LENGTH_SHORT).show();
+            }
         }
-//        parseRetCode(TEST_RET);
-        return parseRetCode(String.valueOf(buffer));
-        // int input = mBTSocket.getInputStream().read();
-        // while (input != -1) {
-        // Log.v("benson", "client get " + input);
-        // input = mBTSocket.getInputStream().read();
-        // }
+
+        if (AppContext.mTest) {
+            if (buffer == null) {
+                return new Coordinate(String.valueOf(TEST_RET)).toContentValues();
+            }
+        }
+
+        return new Coordinate(String.valueOf(buffer)).toContentValues();
+
     }
 
     public class Coordinate {
@@ -112,22 +126,29 @@ public class BlueToothManager {
         private double H;
 
         private long CoordTime;
-    }
 
-    private Coordinate parseRetCode(String ret) {
-        Coordinate coordinate = null;
-        if (!TextUtils.isEmpty(ret)) {
-            String[] rets = ret.split(",");
-            //compare GRC_OK 
-            if (rets[2].equals("0:0")) {
-                coordinate = new Coordinate();
-                coordinate.E = Double.parseDouble(rets[3]);
-                coordinate.N = Double.parseDouble(rets[4]);
-                coordinate.H = Double.parseDouble(rets[5]);
-                coordinate.CoordTime = Long.parseLong(rets[6]);
+        private static final String INTERVAL = "#";
+
+        Coordinate(String ret) {
+            if (!TextUtils.isEmpty(ret)) {
+                String[] rets = ret.split(",");
+                // compare GRC_OK
+                if (rets[2].equals("0:0")) {
+                    E = Double.parseDouble(rets[3]);
+                    N = Double.parseDouble(rets[4]);
+                    H = Double.parseDouble(rets[5]);
+                    CoordTime = Long.parseLong(rets[6]);
+                }
             }
         }
-        return coordinate;
 
+        public ContentValues toContentValues() {
+            ContentValues values = new ContentValues();
+            String xyzs = E + INTERVAL + N + INTERVAL + H;
+            values.put(PointDao.XYZS, xyzs);
+            values.put(PointDao.MTIME, CoordTime);
+            return values;
+        }
     }
+
 }

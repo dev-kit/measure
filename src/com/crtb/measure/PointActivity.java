@@ -21,10 +21,12 @@ import com.crtb.measure.data.PointDao;
 import com.crtb.measure.data.SectionDao;
 import com.crtb.measure.service.CrtbWebService;
 import com.crtb.measure.service.IWebService;
+import com.crtb.measure.util.BlueToothManager;
 
 import android.app.ListActivity;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -176,7 +178,20 @@ public class PointActivity extends ListActivity {
             if (!TextUtils.isEmpty(time)) {
                 ((TextView)view.findViewById(R.id.measure_time)).setText(time);
             }
-            // Null tag means the view has the correct data
+            View measure = view.findViewById(R.id.measure);
+            long pointId = cursor.getLong(cursor.getColumnIndex(PointDao.ID));
+            measure.setTag(pointId);
+            measure.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    long id = (Long)v.getTag();
+                    String where = PointDao.ID + "='" + id + "'";
+                    ContentValues values = BlueToothManager.getInstance(null).measure();
+                    PointDao.update(values, where, null);
+                }
+            });
+            
             view.setTag(null);
 
         }
