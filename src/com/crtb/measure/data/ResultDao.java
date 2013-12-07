@@ -54,7 +54,7 @@ public class ResultDao extends BaseDao {
     			StringBuilder measCodes = new StringBuilder();
     			StringBuilder measVals = new StringBuilder();
     			StringBuilder measCoords = new StringBuilder();
-    			while (cursor.moveToNext()) {
+    			do {
 					if (sectCode == null) {
 						sectCode = cursor.getString(IDX_SECTION_CODE);
 					}
@@ -85,7 +85,10 @@ public class ResultDao extends BaseDao {
 					measVals.append("/");
 					measCoords.append(cursor.getString(IDX_XYZS));
 					measCoords.append("/");
-				}
+				} while(cursor.moveToNext());
+    			measCodes.deleteCharAt(measCodes.lastIndexOf("/"));
+    			measVals.deleteCharAt(measVals.lastIndexOf("/"));
+    			measCoords.deleteCharAt(measCoords.lastIndexOf("/"));
     			result = new HashMap<String, String>();
     			result.put("sectcode", sectCode);
     			result.put("facedk", facedk); //facekilo
