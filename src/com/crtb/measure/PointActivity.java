@@ -189,33 +189,43 @@ public class PointActivity extends ListActivity {
 
                 @Override
                 public void onClick(View v) {
-                    long id = (Long)v.getTag();
-                    String where = PointDao.ID + "='" + id + "'";
-                    ContentValues values = BlueToothManager.getInstance(null).measure();
-                    PointDao.update(values, where, null);
+                    final long id = (Long)v.getTag();
+                    new Thread(new Runnable() {
 
-                    Cursor c = SurveyorDao.query(null);
-                    if (c != null & mSectCode != null) {
-                        try {
-                            if (c.moveToNext()) {
-                                String surveyorName = c.getString(c
-                                        .getColumnIndex(SurveyorDao.SURVEYOR_NAME));
-                                String surveyorID = c.getString(c
-                                        .getColumnIndex(SurveyorDao.SURVEYOR_ID));
+                        @Override
+                        public void run() {
+                            String where = PointDao.ID + "='" + id + "'";
+                            ContentValues values = BlueToothManager.getInstance(null).measure();
+                            PointDao.update(values, where, null);
 
-                                values.clear();
-                                values.put(SectionDao.SURVEYOR_NAME, surveyorName);
-                                values.put(SectionDao.SURVEYOR_ID, surveyorID);
-                                String where2 = SectionDao.SECTION_CODE + "='" + mSectCode + "'";
-                                SectionDao.update(values, where2, null);
+                            Cursor c = SurveyorDao.query(null);
+                            if (c != null & mSectCode != null) {
+                                try {
+                                    if (c.moveToNext()) {
+                                        String surveyorName = c.getString(c
+                                                .getColumnIndex(SurveyorDao.SURVEYOR_NAME));
+                                        String surveyorID = c.getString(c
+                                                .getColumnIndex(SurveyorDao.SURVEYOR_ID));
+
+                                        values.clear();
+                                        values.put(SectionDao.SURVEYOR_NAME, surveyorName);
+                                        values.put(SectionDao.SURVEYOR_ID, surveyorID);
+                                        String where2 = SectionDao.SECTION_CODE + "='" + mSectCode
+                                                + "'";
+                                        SectionDao.update(values, where2, null);
+                                    }
+                                } catch (SQLiteException e) {
+                                    c.close();
+                                }
+                            } else {
+                                Log.w("crtb.PointActivity",
+                                        "can't update due tomSectCode == null or c == null");
                             }
-                        } catch (SQLiteException e) {
-                            c.close();
+                            refresh();
                         }
-                    } else {
-                        Log.w("crtb.PointActivity",
-                                "can't update due tomSectCode == null or c == null");
-                    }
+
+                    }).start();
+
                 }
             });
 

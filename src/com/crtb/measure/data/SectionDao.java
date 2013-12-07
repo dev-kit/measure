@@ -82,4 +82,11 @@ public class SectionDao extends BaseDao {
             c.close();
         }
     }
+
+    public synchronized static void submit(String where) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(UPLOAD, 1);
+        db.update(TABLE, values, where, null);
+    }
 }

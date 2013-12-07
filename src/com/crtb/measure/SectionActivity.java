@@ -22,6 +22,7 @@ import com.crtb.measure.data.BasicData;
 import com.crtb.measure.data.BasicInfoDao;
 import com.crtb.measure.service.CrtbWebService;
 import com.crtb.measure.service.IWebService;
+import com.crtb.measure.util.BlueToothManager;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -62,6 +63,8 @@ public class SectionActivity extends ListActivity {
         mWebService.getZoneAndSiteCodeAsync(userName, password, mHandler);
 
         showSectionView();
+
+        BlueToothManager.getInstance(getApplicationContext());
     }
 
     private void showSectionView() {
