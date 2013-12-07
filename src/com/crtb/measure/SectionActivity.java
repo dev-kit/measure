@@ -18,12 +18,6 @@ package com.crtb.measure;
 
 import java.util.Date;
 
-import com.crtb.measure.data.BasicData;
-import com.crtb.measure.data.BasicInfoDao;
-import com.crtb.measure.service.CrtbWebService;
-import com.crtb.measure.service.IWebService;
-import com.crtb.measure.util.BlueToothManager;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,7 +25,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +32,12 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import com.crtb.measure.data.BasicData;
+import com.crtb.measure.data.BasicInfoDao;
+import com.crtb.measure.service.CrtbWebService;
+import com.crtb.measure.service.IWebService;
+import com.crtb.measure.util.BlueToothManager;
 
 /**
  * A list view example where the data comes from a cursor, and a

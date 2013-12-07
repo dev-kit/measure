@@ -77,6 +77,7 @@ public class PointActivity extends ListActivity {
                     		new Thread(new Runnable() {
 								@Override
 								public void run() {
+									BasicInfoDao.submit(BasicInfoDao.SECTION_CODE + "=" + "\'" + sectionCode + "\'");
 									SectionDao.submit(SectionDao.SECTION_CODE + "=" + "\'" + sectionCode + "\'");
 									refresh();
 								}
