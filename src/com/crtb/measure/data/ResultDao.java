@@ -37,7 +37,7 @@ public class ResultDao extends BaseDao {
     private static final int IDX_XYZS = 10;
 	
     public HashMap<String, String> getMeasureResult() {
-    	Map<String, String> result = null;
+    	HashMap<String, String> result = null;
     	SQLiteDatabase db  = mDbHelper.getReadableDatabase();
     	String selection = SectionDao.UPLOAD + "=0"; 
     	Cursor cursor = db.query(TABLE, COLUMNS, selection, null, null, null, null);
