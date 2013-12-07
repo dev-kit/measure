@@ -1,7 +1,5 @@
 package com.crtb.measure.service;
 
-import java.util.Map;
-
 import android.os.Handler;
 
 public interface IWebService {
@@ -10,6 +8,7 @@ public interface IWebService {
 	public static final int MSG_GET_SECT_INFOS_DONE = 3;
 	public static final int MSG_GET_TEST_CODES_DONE = 4;
 	public static final int MSG_GET_SURVEYORS_DONE  = 5;
+	public static final int MSG_GET_TEST_RESULT_DATA_DONE = 6;
 	/**
 	 * 
 	 * @param userName 登陆账号

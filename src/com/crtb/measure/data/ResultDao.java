@@ -41,6 +41,7 @@ public class ResultDao extends BaseDao {
     	SQLiteDatabase db  = mDbHelper.getReadableDatabase();
     	String selection = SectionDao.UPLOAD + "=0"; 
     	Cursor cursor = db.query(TABLE, COLUMNS, selection, null, null, null, null);
+    	//TimUtils.printCursorContent("ResultDao", cursor);
     	if (cursor != null && cursor.moveToFirst()) {
     		try {
     			String sectCode = null;
@@ -77,7 +78,8 @@ public class ResultDao extends BaseDao {
 						description = cursor.getString(IDX_DESCRIPTION);
 					}
 					if (surveyDate == null) {
-						surveyDate =  cursor.getString(IDX_SURVEY_DATE);
+						//surveyDate =  cursor.getString(IDX_SURVEY_DATE);
+						surveyDate =  "crtb";
 					}
 					measCodes.append(cursor.getString(IDX_INNER_CODE));
 					measCodes.append("/");
@@ -90,14 +92,41 @@ public class ResultDao extends BaseDao {
     			measVals.deleteCharAt(measVals.lastIndexOf("/"));
     			measCoords.deleteCharAt(measCoords.lastIndexOf("/"));
     			result = new HashMap<String, String>();
-    			result.put("sectcode", sectCode);
-    			result.put("facedk", facedk); //facekilo
-    			result.put("buildstep", buildStep);
-    			result.put("instr", instrument);
-    			result.put("surveyor", surveyor);
-    			result.put("surveyID", surveyorId);
-    			result.put("description", description);
-    			result.put("surveydate", surveyDate);
+    			if (sectCode != null) {
+    				result.put("sectcode", sectCode);
+    			} else {
+    				result.put("sectcode", "crtb");
+    			}
+    			if (facedk != null) {
+    				result.put("facedk", facedk); //facekilo
+    			} else {
+    				result.put("facedk", "crtb");
+    			}
+    			if (buildStep != null) {
+    				result.put("buildstep", buildStep);
+    			} else {
+    				result.put("buildstep", "crtb");
+    			}
+    			if (instrument != null) {
+    				result.put("instr", instrument);
+    			} else {
+    				result.put("instr", "crtb");
+    			}
+    			if (surveyor != null) {
+    				result.put("surveyor", surveyor);
+    			} else {
+    				result.put("surveyor", "crtb");
+    			}
+    			if (surveyorId != null) {
+    				result.put("surveyID", surveyorId);
+    			} else {
+    				result.put("surveyID", "crtb");
+    			}
+    			if (description != null) {
+    				result.put("description", description);
+    			} else {
+    				result.put("description", "crtb");
+    			}
     			result.put("meascodes", measCodes.toString()); // innercodes
     			result.put("measvals", measVals.toString()); //values
     			result.put("meascoords", measCoords.toString());//xyz

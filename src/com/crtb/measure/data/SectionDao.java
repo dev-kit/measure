@@ -89,4 +89,5 @@ public class SectionDao extends BaseDao {
         values.put(UPLOAD, 1);
         db.update(TABLE, values, where, null);
     }
+   
 }

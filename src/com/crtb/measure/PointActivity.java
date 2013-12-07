@@ -16,18 +16,7 @@
 
 package com.crtb.measure;
 
-import com.crtb.measure.data.BasicInfoDao;
-import com.crtb.measure.data.PointDao;
-import com.crtb.measure.data.SectionDao;
-import com.crtb.measure.data.SurveyorDao;
-import com.crtb.measure.data.UserDao;
-import com.crtb.measure.service.CrtbWebService;
-import com.crtb.measure.service.IWebService;
-import com.crtb.measure.util.BlueToothManager;
-
 import android.app.ListActivity;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -40,21 +29,24 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.crtb.measure.data.BasicInfoDao;
+import com.crtb.measure.data.PointDao;
+import com.crtb.measure.data.SectionDao;
+import com.crtb.measure.data.SurveyorDao;
+import com.crtb.measure.service.CrtbWebService;
+import com.crtb.measure.service.IWebService;
+import com.crtb.measure.util.BlueToothManager;
 
 /**
  * A list view example where the data comes from a cursor, and a
@@ -77,11 +69,19 @@ public class PointActivity extends ListActivity {
             @Override
             public void onClick(View v) {
                 CrtbWebService.getInstance().getTestResultDataAsync(new Handler() {
-
                     @Override
                     public void handleMessage(Message msg) {
-                        refresh();
-                        super.handleMessage(msg);
+                    	if (msg.what == IWebService.MSG_GET_TEST_RESULT_DATA_DONE) {
+                    		final String sectionCode = (String)msg.obj;
+                    		Toast.makeText(PointActivity.this, "上传完毕!" + sectionCode, Toast.LENGTH_SHORT).show();
+                    		new Thread(new Runnable() {
+								@Override
+								public void run() {
+									SectionDao.submit(SectionDao.SECTION_CODE + "=" + "\'" + sectionCode + "\'");
+									refresh();
+								}
+							}).start();
+                    	}
                     }
                 });
             }

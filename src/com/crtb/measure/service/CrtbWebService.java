@@ -12,8 +12,10 @@ import org.xmlpull.v1.XmlPullParserException;
 import com.crtb.measure.data.ResultDao;
 
 import android.os.Handler;
+import android.util.Log;
 
 public class CrtbWebService implements IWebService {
+	private static final String TAG = "CrtbWebService";
 	private static final String NAMESPACE = "http://tempuri.org/";
 	private static final String TRAFFIC_SERVICE_URI_GET  = "https://lccs.cr-tb.com/DTMS/ictrcp/basedown.asmx";
 	private static final String TRAFFIC_SERVICE_URI_POST = "https://lccs.cr-tb.com/DTMS/ictrcp/testdata.asmx";
@@ -133,6 +135,7 @@ public class CrtbWebService implements IWebService {
 	}
 	
 	private static void send(SoapObject rpcMessage, MsgResponseHandler handler, String url) throws IOException, XmlPullParserException {
+		Log.d(TAG, "sending request: " + rpcMessage.toString());
         SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(110);
         soapEnvelope.bodyOut = rpcMessage;
         soapEnvelope.dotNet  = true;
