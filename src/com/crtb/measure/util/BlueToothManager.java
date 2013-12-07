@@ -38,7 +38,7 @@ public class BlueToothManager {
 
     private static Context sContext;
 
-    private long mWaitTime = 10000;
+    private static long mWaitTime = 10000;
 
     private static String TEST_RET = "%R1P,0,0:0,1000,200,3000,123456";
 
@@ -47,7 +47,7 @@ public class BlueToothManager {
     // ASCII-Response
     // %R1P,0,0:RC,E[double],N[double],H[double],CoordTime[long],
     // E-Cont[double],N-Cont[double],H-Cont[double],CoordContTime[long]
-    private static String COMMAND_MEASURE = "%R1Q,2082:" + 10000 + TMC_AUTO_INC;
+    private static String COMMAND_MEASURE = "%R1Q,2082:" + mWaitTime + TMC_AUTO_INC;
 
     private BlueToothManager() {
         mBTAdapt = BluetoothAdapter.getDefaultAdapter();
@@ -61,7 +61,7 @@ public class BlueToothManager {
         return sBlueToothManager;
     }
 
-    public void setBTSocket(BluetoothSocket btSocket) {
+    public synchronized void setBTSocket(BluetoothSocket btSocket) {
         mBTSocket = btSocket;
     }
 
@@ -77,41 +77,62 @@ public class BlueToothManager {
         if (mBTSocket == null) {
             return false;
         }
-        if (!mBTSocket.isConnected()) {
-            try {
-                mBTSocket.connect();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                Toast.makeText(sContext, R.string.bt_connect_error, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        }
+        //
+        // if (!mBTSocket.isConnected()) {
+        // try {
+        // mBTSocket.connect();
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // Toast.makeText(sContext, R.string.bt_connect_error,
+        // Toast.LENGTH_SHORT).show();
+        // return false;
+        // }
+        // }
         return true;
     }
 
-    public ContentValues measure() {
-        byte[] buffer = null;
+    public synchronized ContentValues measure() {
+        final byte[] buffer = new byte[1024];
+        final Coordinate testObject = new Coordinate(null);
         if (ensureConnect()) {
-            buffer = new byte[1024];
-            OutputStream out;
-            InputStream input;
-            try {
-                out = mBTSocket.getOutputStream();
-                input = mBTSocket.getInputStream();
-                out.write(COMMAND_MEASURE.getBytes());
-                input.read(buffer);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                Toast.makeText(sContext, R.string.bt_connect_error, Toast.LENGTH_SHORT).show();
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        OutputStream out;
+                        InputStream input;
+                        out = mBTSocket.getOutputStream();
+                        input = mBTSocket.getInputStream();
+                        out.write(COMMAND_MEASURE.getBytes());
+                        input.read(buffer);
+                        testObject.E = 1;
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+//                        Toast.makeText(sContext, R.string.bt_connect_error, Toast.LENGTH_SHORT)
+//                                .show();
+                    } finally {
+                        synchronized (buffer) {
+                            buffer.notify();
+                        }
+                    }
+
+                }
+
+            }).start();
+            synchronized (buffer) {
+                try {
+                    buffer.wait(mWaitTime * 2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        if (AppContext.mTest) {
-            if (buffer == null) {
-                return new Coordinate(String.valueOf(TEST_RET)).toContentValues();
-            }
+        if (AppContext.mTest & testObject.E != 1) {
+            return new Coordinate(String.valueOf(TEST_RET)).toContentValues();
         }
 
         return new Coordinate(String.valueOf(buffer)).toContentValues();
@@ -119,15 +140,15 @@ public class BlueToothManager {
     }
 
     public class Coordinate {
-        private double E;
+        double E;
 
-        private double N;
+        double N;
 
-        private double H;
+        double H;
 
-        private long CoordTime;
+        long CoordTime;
 
-        private static final String INTERVAL = "#";
+        static final String INTERVAL = "#";
 
         Coordinate(String ret) {
             if (!TextUtils.isEmpty(ret)) {

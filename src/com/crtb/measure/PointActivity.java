@@ -19,6 +19,8 @@ package com.crtb.measure;
 import com.crtb.measure.data.BasicInfoDao;
 import com.crtb.measure.data.PointDao;
 import com.crtb.measure.data.SectionDao;
+import com.crtb.measure.data.SurveyorDao;
+import com.crtb.measure.data.UserDao;
 import com.crtb.measure.service.CrtbWebService;
 import com.crtb.measure.service.IWebService;
 import com.crtb.measure.util.BlueToothManager;
@@ -31,11 +33,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -185,13 +189,46 @@ public class PointActivity extends ListActivity {
 
                 @Override
                 public void onClick(View v) {
-                    long id = (Long)v.getTag();
-                    String where = PointDao.ID + "='" + id + "'";
-                    ContentValues values = BlueToothManager.getInstance(null).measure();
-                    PointDao.update(values, where, null);
+                    final long id = (Long)v.getTag();
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            String where = PointDao.ID + "='" + id + "'";
+                            ContentValues values = BlueToothManager.getInstance(null).measure();
+                            PointDao.update(values, where, null);
+
+                            Cursor c = SurveyorDao.query(null);
+                            if (c != null & mSectCode != null) {
+                                try {
+                                    if (c.moveToNext()) {
+                                        String surveyorName = c.getString(c
+                                                .getColumnIndex(SurveyorDao.SURVEYOR_NAME));
+                                        String surveyorID = c.getString(c
+                                                .getColumnIndex(SurveyorDao.SURVEYOR_ID));
+
+                                        values.clear();
+                                        values.put(SectionDao.SURVEYOR_NAME, surveyorName);
+                                        values.put(SectionDao.SURVEYOR_ID, surveyorID);
+                                        String where2 = SectionDao.SECTION_CODE + "='" + mSectCode
+                                                + "'";
+                                        SectionDao.update(values, where2, null);
+                                    }
+                                } catch (SQLiteException e) {
+                                    c.close();
+                                }
+                            } else {
+                                Log.w("crtb.PointActivity",
+                                        "can't update due tomSectCode == null or c == null");
+                            }
+                            refresh();
+                        }
+
+                    }).start();
+
                 }
             });
-            
+
             view.setTag(null);
 
         }
@@ -274,14 +311,27 @@ public class PointActivity extends ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
-        refresh();
+        switch (item.getItemId()) {
+            case MENU_REFRESH:
+                refresh();
+                break;
+            case MENU_BT_SETTING:
+                Intent intent = new Intent(this, BlueToothSearch.class);
+                startActivity(intent);
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(R.string.refresh);
+        menu.add(0, MENU_REFRESH, 0, R.string.refresh);
+        menu.add(0, MENU_BT_SETTING, 0, R.string.bt_setting);
         return super.onPrepareOptionsMenu(menu);
     }
 
+    private final static int MENU_REFRESH = 0;
+
+    private final static int MENU_BT_SETTING = 1;
 }
