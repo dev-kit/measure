@@ -36,7 +36,7 @@ public class ResultDao extends BaseDao {
     private static final int IDX_MVALUES = 9;
     private static final int IDX_XYZS = 10;
 	
-    public Map<String, String> getMeasureResult() {
+    public HashMap<String, String> getMeasureResult() {
     	Map<String, String> result = null;
     	SQLiteDatabase db  = mDbHelper.getReadableDatabase();
     	String selection = SectionDao.UPLOAD + "=0"; 

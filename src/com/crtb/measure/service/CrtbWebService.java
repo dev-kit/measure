@@ -124,11 +124,14 @@ public class CrtbWebService implements IWebService {
 			@Override
 			public void run() {
 				ResultDao resultDao = new ResultDao();
-				SoapObject message = SoapMessageFactory.createMessage("getTestResultData", resultDao.getMeasureResult());
-				try {
-					send(message, new MsgResponseHandler(handler), TRAFFIC_SERVICE_URI_POST);
-				} catch (Exception e) {
-					e.printStackTrace();
+				HashMap<String, String> measureResult = resultDao.getMeasureResult();
+				if (measureResult != null) {
+					SoapObject message = SoapMessageFactory.createMessage("getTestResultData", resultDao.getMeasureResult());
+					try {
+						send(message, new MsgResponseHandler(handler), TRAFFIC_SERVICE_URI_POST);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}).start();
