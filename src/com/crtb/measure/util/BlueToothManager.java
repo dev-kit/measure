@@ -131,7 +131,7 @@ public class BlueToothManager {
             }
         }
 
-        if (AppContext.mTest & testObject.E != 1) {
+        if (AppContext.mTest && testObject.E != 1) {
             return new Coordinate(String.valueOf(TEST_RET)).toContentValues();
         }
 

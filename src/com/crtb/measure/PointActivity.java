@@ -73,7 +73,7 @@ public class PointActivity extends ListActivity {
                     public void handleMessage(Message msg) {
                     	if (msg.what == IWebService.MSG_GET_TEST_RESULT_DATA_DONE) {
                     		final String sectionCode = (String)msg.obj;
-                    		Toast.makeText(PointActivity.this, "上传完毕!" + sectionCode, Toast.LENGTH_SHORT).show();
+                    		Toast.makeText(PointActivity.this, R.string.submitted + sectionCode, Toast.LENGTH_SHORT).show();
                     		new Thread(new Runnable() {
 								@Override
 								public void run() {

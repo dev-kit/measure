@@ -14,5 +14,6 @@
     <string name="refresh">refresh</string>
     <string name="bt_setting">蓝牙配置</string>
     <string name="bt_setup">蓝牙连接已建立</string>
+    <string name="submitted">上传完毕!</string>
 
 </resources>
