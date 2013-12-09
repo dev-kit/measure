@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.crtb.measure.data.ResultDao;
-
 import android.os.Handler;
 import android.util.Log;
+
+import com.crtb.measure.data.ResultDao;
 
 public class CrtbWebService implements IWebService {
 	private static final String TAG = "CrtbWebService";
@@ -139,7 +140,7 @@ public class CrtbWebService implements IWebService {
 	
 	private static void send(SoapObject rpcMessage, MsgResponseHandler handler, String url) throws IOException, XmlPullParserException {
 		Log.d(TAG, "sending request: " + rpcMessage.toString());
-        SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(110);
+        SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         soapEnvelope.bodyOut = rpcMessage;
         soapEnvelope.dotNet  = true;
         soapEnvelope.setOutputSoapObject(rpcMessage);
