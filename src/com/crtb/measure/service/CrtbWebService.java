@@ -1,9 +1,12 @@
 package com.crtb.measure.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -145,7 +148,10 @@ public class CrtbWebService implements IWebService {
         soapEnvelope.dotNet  = true;
         soapEnvelope.setOutputSoapObject(rpcMessage);
         HttpTransportSE localHttpTransportSE = new HttpTransportSE(url, CONNECITON_TIME_OUT);
-        localHttpTransportSE.call(NAMESPACE + rpcMessage.getName(), soapEnvelope);
+        List<HeaderProperty> headerList = new ArrayList<HeaderProperty>();
+        headerList.add(new HeaderProperty("Content-Type", "text/xml; charset=utf-8"));
+       // headerList.add(new HeaderProperty("SoapAction", "url/name"));        
+        localHttpTransportSE.call(NAMESPACE + rpcMessage.getName(), soapEnvelope, headerList);
         handler.handleResponse(soapEnvelope.bodyIn, rpcMessage);
     }
 }
